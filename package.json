@@ -1,0 +1,23 @@
+{
+  "name": "orthogonalize-js",
+  "version": "0.0.1",
+  "description": "a Javascript polyline orthogonalizer library",
+  "main": "orthogonalize.src.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stefanocudini/orthogonalize-js.git"
+  },
+  "keywords": [
+    "maps",
+    "javascript"
+  ],
+  "author": "Stefano Cudini",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stefanocudini/orthogonalize-js/issues"
+  },
+  "homepage": "http://labs.easyblog.it/maps/orthogonalize-js"
+}
