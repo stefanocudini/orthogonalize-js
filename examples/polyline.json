@@ -1,4 +1,3 @@
-var geojsonPolyline = 
 {
     "type":"FeatureCollection",
     "generator":"JOSM",
@@ -1734,4 +1733,4 @@ var geojsonPolyline =
             }
         }
     ]
-};
+}

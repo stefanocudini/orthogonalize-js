@@ -2,22 +2,21 @@
  2015 © Stefano Cudini
  Orthogonalize.js, a Javascript polyline orthogonalizer library
  http://labs.easyblog.it/maps/orthogonalize-js
+
+ based on: Openstreetmap iD editor:
+ https://github.com/openstreetmap/iD/blob/master/js/id/actions/orthogonalize.js
 */
 
 (function() {
     'use strict';
 
-    //TODO
-
-    // both algorithms combined for awesome performance
-    function orthogonalize(points, tolerance, highestQuality) {
+    function orthogonalize(points, tolerance) {
 
         if (points.length <= 1) return points;
 
         var sqTolerance = tolerance !== undefined ? tolerance * tolerance : 1;
 
-        points = highestQuality ? points : simplifyRadialDist(points, sqTolerance);
-        points = _orthogonalize(points, sqTolerance);
+        points = iD.actions.orthogonalize(points, sqTolerance);
 
         return points;
     }
