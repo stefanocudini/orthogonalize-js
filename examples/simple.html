@@ -2,27 +2,38 @@
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head> 
 <title></title> 
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-<!--link href="style.css" rel="stylesheet" type="text/css" /-->
-<style>
-/*	@import url('style.css'); */
-#content {
-
-}
-</style>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+	<link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
+	<link rel="stylesheet" href="../style.css" />
 </head>
 
 <body>
-<div id="content">
+<h3><a href="../"><big>◄</big> Orthogonalize JS</a></h3>
 
-</div>
+<h4>Simple Example: <em>Orthogonalize Leaflet Polyline</em></h4>
 
-<!--
-<script src="/jquery-1.7.1.min.js"></script>
-$(function() {
+<div id="map"></div>
 
-});
-</script> 
--->
+<script src="/maps/leaflet/dist/leaflet.js"></script>
+<script src="../orthogonalize.src.js"></script>
+<script src="geojson-polyline.js"></script>
+<script>
+
+	var map = L.map('map', {
+		zoom: 9,
+		center: [41.575730,13.002411],
+		layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+	});
+
+	var geojsonLayer = L.geoJson(geojsonPolyline);
+
+	map.addLayer(geojsonLayer).fitBounds( geojsonLayer.getBounds() );
+
+
+
+</script>
+
+<div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
+	
 </body>
 </html>
