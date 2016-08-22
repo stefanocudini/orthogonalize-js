@@ -14,18 +14,16 @@
 
 <div id="map"></div>
 
-<script src="/js/jquery.min.js"></script>
-<script src="/js/underscore.min.js"></script>
+<script src="../node_modules/jquery/dist/jquery.min.js"></script>
+<script src="../node_modules/underscore/underscore-min.js"></script>
 
-<script src="/maps/leaflet/dist/leaflet.js"></script>
-
-<script src="../orthogonalize.iD.js"></script>
+<script src="../node_modules/leaflet/dist/leaflet-src.js"></script>
 <script src="../orthogonalize.src.js"></script>
 <script>
 
 	var map = L.map('map', {
 		zoom: 9,
-		center: [41.575730,13.002411],
+		center: [41,13],
 		layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
 	});
 
@@ -35,10 +33,11 @@
 
 		map.addLayer(geoLayer).fitBounds( geoLayer.getBounds() );
 
-		var orto = orthogonalize(geoLayer);
+		var geoOrto = Orthogonalize(geoLayer);
 
-		console.log(orto);
+		console.log(geoLayer, geoOrto);
 
+		L.geoJson(geoOrto).addTo(map);
 	});
 
 </script>
