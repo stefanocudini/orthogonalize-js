@@ -15,9 +15,9 @@
 <div id="map"></div>
 
 <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-<script src="../node_modules/underscore/underscore-min.js"></script>
-
 <script src="../node_modules/leaflet/dist/leaflet-src.js"></script>
+
+<script src="../node_modules/underscore/underscore-min.js"></script>
 <script src="../orthogonalize.src.js"></script>
 <script>
 
@@ -33,11 +33,20 @@
 
 		map.addLayer(geoLayer).fitBounds( geoLayer.getBounds() );
 
-		var geoOrto = Orthogonalize(geoLayer);
+		console.log('original',geojson);
 
-		console.log(geoLayer, geoOrto);
+		var geojsonOrto = Orthogonalize(geojson, 1);
 
-		L.geoJson(geoOrto).addTo(map);
+		console.log('Orthogonalized',geojsonOrto);
+
+		var geoOrto = L.geoJson( geojsonOrto, { style: function() {
+			return {
+				color: '#b6f', weight: 5, opacity: 0.7
+			}
+		}});
+		
+
+		map.addLayer(geoOrto);
 	});
 
 </script>

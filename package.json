@@ -14,14 +14,18 @@
     "maps",
     "javascript"
   ],
-  "author": "Stefano Cudini",
+  "author": {
+    "name": "Stefano Cudini",
+    "email": "stefano.cudini@gmail.com",
+    "url": "http://labs.easyblog.it/"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/stefanocudini/orthogonalize-js/issues"
   },
   "homepage": "http://labs.easyblog.it/maps/orthogonalize-js",
   "dependencies": {
-    "underscore": "^1.8.2",    
+    "underscore": "^1.8.2"  
   },
   "devDependencies": {
     "jquery": "^2.1.3",
