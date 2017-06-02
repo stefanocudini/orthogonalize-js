@@ -163,14 +163,15 @@
             };
         });
 
-        console.log('nodes',nodes);
+       
 
-        var points = _.uniq(nodes),//.map(function(n) { return projection(n.loc); }),
+        var points = _.uniq(nodes).map(function(n) { return n.loc;/*projection(n.loc);*/ }),
             corner = {i: 0, dotp: 1},
             epsilon = 1e-4,
             node, loc, score, motions, i, j;
-
-        if (points.length === 3) {   // move only one vertex for right triangle
+ console.log('nodes',nodes);
+ console.log('points',points);
+/*        if (points.length === 3) {   // move only one vertex for right triangle
             for (i = 0; i < 1000; i++) {
                 motions = points.map(calcMotion);
                 points[corner.i] = addPoints(points[corner.i], motions[corner.i]);
@@ -184,7 +185,7 @@
             loc = points[corner.i];//projection.invert(points[corner.i]);
             graph = graph.replace(node.move(geoInterp(node.loc, loc, t)));
 
-        } else {
+        } else {*/
             var best,
                 originalPoints = _.clone(points);
             score = Infinity;
@@ -209,9 +210,10 @@
             for (i = 0; i < points.length; i++) {
                 // only move the points that actually moved
                 if (originalPoints[i][0] !== points[i][0] || originalPoints[i][1] !== points[i][1]) {
-                    loc = points[i];//projection.invert(points[i]);
-                    node = graph.entity(nodes[i].id);
-                    graph = graph.replace(node.move(geoInterp(node.loc, loc, t)));
+                    //loc = points[i];//projection.invert(points[i]);
+                    //node = graph.entity(nodes[i].id);
+                    //graph = graph.replace(node.move(geoInterp(node.loc, loc, t)));
+                    points[i] = geoInterp(originalPoints[i], points[i], t)
                 }
             }
 
@@ -224,7 +226,7 @@
                     graph = actionDeleteNode(node.id)(graph);
                 }
             }//*/
-        }
+        //}
 
         return {
             "type": "FeatureCollection",
@@ -235,7 +237,7 @@
                     "geometry": {
                         "type": "LineString",
                         "coordinates": _.map(points, function(p) {
-                            return [ p.loc[1], p.loc[0] ]
+                            return [ p[1], p[0] ]
                         })
                     }
                 }

@@ -29,7 +29,11 @@
 
 	$.getJSON('polyline.json', function(geojson) {
 
-		var geoLayer = L.geoJson(geojson);
+		var geoLayer = L.geoJson(geojson, {
+			style: function() {
+				return {color: '#00f', weight: 6}
+			}
+		});
 
 		map.addLayer(geoLayer).fitBounds( geoLayer.getBounds() );
 
@@ -39,11 +43,11 @@
 
 		console.log('Orthogonalized',geojsonOrto);
 
-		var geoOrto = L.geoJson( geojsonOrto, { style: function() {
-			return {
-				color: '#b6f', weight: 5, opacity: 0.7
+		var geoOrto = L.geoJson( geojsonOrto, {
+			style: function() {
+				return {color: '#f00', weight: 3, opacity: 1}
 			}
-		}});
+		});
 		
 
 		map.addLayer(geoOrto);
