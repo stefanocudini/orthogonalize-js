@@ -26,7 +26,7 @@
      * Based on https://github.com/openstreetmap/potlatch2/blob/master/net/systemeD/potlatch2/tools/Quadrilateralise.as
      */
 
-    var threshold = 12, // degrees within right or straight to alter
+    var threshold = 15, // degrees within right or straight to alter
         lowerThreshold = Math.cos((90 - threshold) * Math.PI / 180),
         upperThreshold = Math.cos(threshold * Math.PI / 180);
 
@@ -40,35 +40,8 @@
                 p1[1] + (p2[1] - p1[1]) * t];
     }
 
-    function actionDeleteNode(nodeId) {
-        return function(graph) {
-            var node = graph.entity(nodeId);
-
-            graph.parentWays(node)
-                .forEach(function(parent) {
-                    parent = parent.removeNode(nodeId);
-                    graph = graph.replace(parent);
-
-                    if (parent.isDegenerate()) {
-                        graph = DeleteWay(parent.id)(graph);
-                    }
-                });
-
-            graph.parentRelations(node)
-                .forEach(function(parent) {
-                    parent = parent.removeMembersWithID(nodeId);
-                    graph = graph.replace(parent);
-
-                    if (parent.isDegenerate()) {
-                        graph = DeleteRelation(parent.id)(graph);
-                    }
-                });
-
-            return graph.remove(node);
-        };
-    }
-
     function calcMotion(b, i, array) {
+
         var a = array[(i - 1 + array.length) % array.length],
             c = array[(i + 1) % array.length],
             p = subtractPoints(a, b),
@@ -91,7 +64,7 @@
             corner.dotp = Math.abs(dotp);
         }
 
-        return normalizePoint(addPoints(p, q), 0.1 * dotp * scale);
+        return normalizePoint(sumPoints(p, q), 0.1 * dotp * scale);
     }
 
     function squareness(points) {
@@ -117,11 +90,12 @@
     }
 
     function subtractPoints(a, b) {
-
+        //console.log('subtractPoints',a,b)
+        if(!a[0] || !b[0]) return null;
         return [a[0] - b[0], a[1] - b[1]];
     }
 
-    function addPoints(a, b) {
+    function sumPoints(a, b) {
 
         return [a[0] + b[0], a[1] + b[1]];
     }
@@ -163,70 +137,55 @@
             };
         });
 
-       
-
-        var points = _.uniq(nodes).map(function(n) { return n.loc;/*projection(n.loc);*/ }),
+        var points = _.chain(nodes).uniq().pluck('loc').value(),
             corner = {i: 0, dotp: 1},
-            epsilon = 1e-4,
+            iterations = 1000,
+            epsilon = 1/iterations,
             node, loc, score, motions, i, j;
- console.log('nodes',nodes);
- console.log('points',points);
-/*        if (points.length === 3) {   // move only one vertex for right triangle
-            for (i = 0; i < 1000; i++) {
-                motions = points.map(calcMotion);
-                points[corner.i] = addPoints(points[corner.i], motions[corner.i]);
-                score = corner.dotp;
-                if (score < epsilon) {
-                    break;
-                }
-            }
 
-            node = graph.entity(nodes[corner.i].id);
-            loc = points[corner.i];//projection.invert(points[corner.i]);
-            graph = graph.replace(node.move(geoInterp(node.loc, loc, t)));
 
-        } else {*/
-            var best,
-                originalPoints = _.clone(points);
+        var oriPoints = _.clone(points),
+            newPoints = [],
             score = Infinity;
 
-            for (i = 0; i < 1000; i++) {
-                motions = points.map(calcMotion);
-                for (j = 0; j < motions.length; j++) {
-                    points[j] = addPoints(points[j],motions[j]);
-                }
-                var newScore = squareness(points);
-                if (newScore < score) {
-                    best = _.clone(points);
-                    score = newScore;
-                }
-                if (score < epsilon) {
-                    break;
-                }
+        for (i = 0; i < iterations; i++) {
+            
+            motions = points.map( calcMotion );
+
+            for (j = 0; j < motions.length; j++)
+                points[j] = sumPoints(points[j], motions[j]);
+            
+            var newScore = squareness(points);
+            if (newScore < score) {
+                newPoints = _.clone(points);
+                score = newScore;
             }
 
-            points = best;
-
-            for (i = 0; i < points.length; i++) {
-                // only move the points that actually moved
-                if (originalPoints[i][0] !== points[i][0] || originalPoints[i][1] !== points[i][1]) {
-                    //loc = points[i];//projection.invert(points[i]);
-                    //node = graph.entity(nodes[i].id);
-                    //graph = graph.replace(node.move(geoInterp(node.loc, loc, t)));
-                    points[i] = geoInterp(originalPoints[i], points[i], t)
-                }
+            if (score < epsilon) {
+                break;
             }
+            
+            if((i%100)==0)   //each 10 cycles
+                L.polyline(newPoints, {color: '#0e0',weight:3, opacity:i/1000}).addTo(map);
+        }
 
-            // remove empty nodes on straight sections
-            /*for (i = 0; t === 1 && i < points.length; i++) {
-                node = graph.entity(nodes[i].id);
+        points = newPoints;
 
-                var dotp = normalizedDotProduct(i, points);
-                if (dotp < -1 + epsilon) {
-                    graph = actionDeleteNode(node.id)(graph);
-                }
-            }//*/
-        //}
+        for (i = 0; i < points.length; i++) {
+            // only move the points that actually moved
+            if (oriPoints[i][0] !== points[i][0] || oriPoints[i][1] !== points[i][1]) {
+                
+                //loc = projection.invert(points[i]);
+                //node = graph.entity(nodes[i].id);
+                //graph = graph.replace( node.move(geoInterp(node.loc, loc, t)) );
+
+                points[i] = geoInterp(oriPoints[i], points[i], t);
+                //console.log('geoInterp', oriPoints[i], points[i]);
+                
+                L.circleMarker(oriPoints[i], {color: '#00f'}).addTo(map);
+                L.circleMarker(points[i], {color: '#f00', radius:5}).addTo(map);
+            }
+        }
 
         return {
             "type": "FeatureCollection",

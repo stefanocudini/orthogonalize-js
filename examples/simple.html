@@ -12,7 +12,7 @@
 
 <h4>Simple Example: <em>Orthogonalize Leaflet Polyline</em></h4>
 
-<div id="map"></div>
+<div id="map" style="position: absolute;top: 0;left: 0;right: 0;bottom: 0"></div>
 
 <script src="../node_modules/jquery/dist/jquery.min.js"></script>
 <script src="../node_modules/leaflet/dist/leaflet-src.js"></script>
@@ -22,36 +22,51 @@
 <script>
 
 	var map = L.map('map', {
-		zoom: 9,
-		center: [41,13],
-		layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+		zoom: 17,
+		center: [42.31981, 12.69832]
+		//crs: L.CRS.Simple,
+		//layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
 	});
 
 	$.getJSON('polyline.json', function(geojson) {
 
 		var geoLayer = L.geoJson(geojson, {
 			style: function() {
-				return {color: '#00f', weight: 6}
+				return {color: '#00f', weight: 5}
 			}
 		});
 
-		map.addLayer(geoLayer).fitBounds( geoLayer.getBounds() );
+		map.addLayer(geoLayer);//.fitBounds( geoLayer.getBounds() );
 
-		console.log('original',geojson);
+		console.log('original geojson',geojson);
 
-		var geojsonOrto = Orthogonalize(geojson, 1);
+		var geojsonOrto = Orthogonalize(geojson);
 
 		console.log('Orthogonalized',geojsonOrto);
 
 		var geoOrto = L.geoJson( geojsonOrto, {
 			style: function() {
-				return {color: '#f00', weight: 3, opacity: 1}
+				return {color: '#f00', weight: 2, opacity: 1}
 			}
 		});
 		
 
 		map.addLayer(geoOrto);
 	});
+
+$.getJSON('polyline_ortho.json', function(geojson) {
+
+		L.geoJson(geojson, {
+			style: function() {
+				return {color: '#f0f', weight: 5}
+			}
+		}).addTo(map);
+
+		_.each(geojson.features[0].geometry.coordinates[0], function(l) {
+			console.log('each',l)
+			L.circleMarker(l.reverse(), {color: '#ff0', radius:6}).addTo(map);
+		});
+});
 
 </script>
 
