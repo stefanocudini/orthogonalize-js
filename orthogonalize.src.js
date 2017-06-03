@@ -14,7 +14,6 @@
     // Node/CommonJS
         module.exports = factory(require('underscore'));
     } else {
-
     // Browser globals
         if(typeof window._ === 'undefined')
             throw 'Underscore must be loaded first';
@@ -29,6 +28,9 @@
     var threshold = 15, // degrees within right or straight to alter
         lowerThreshold = Math.cos((90 - threshold) * Math.PI / 180),
         upperThreshold = Math.cos(threshold * Math.PI / 180);
+        corner = {i: 0, dotp: 1},
+        iterations = 1000,
+        epsilon = 1/iterations;
 
     function geoEuclideanDistance(a, b) {
         var x = a[0] - b[0], y = a[1] - b[1];
@@ -38,33 +40,6 @@
     function geoInterp(p1, p2, t) {
         return [p1[0] + (p2[0] - p1[0]) * t,
                 p1[1] + (p2[1] - p1[1]) * t];
-    }
-
-    function calcMotion(b, i, array) {
-
-        var a = array[(i - 1 + array.length) % array.length],
-            c = array[(i + 1) % array.length],
-            p = subtractPoints(a, b),
-            q = subtractPoints(c, b),
-            scale, dotp;
-
-        scale = 2 * Math.min(geoEuclideanDistance(p, [0, 0]), geoEuclideanDistance(q, [0, 0]));
-        p = normalizePoint(p, 1.0);
-        q = normalizePoint(q, 1.0);
-
-        dotp = filterDotProduct(p[0] * q[0] + p[1] * q[1]);
-
-        // nasty hack to deal with almost-straight segments (angle is closer to 180 than to 90/270).
-        if (array.length > 3) {
-            if (dotp < -0.707106781186547) {
-                dotp += 1.0;
-            }
-        } else if (dotp && Math.abs(dotp) < corner.dotp) {
-            corner.i = i;
-            corner.dotp = Math.abs(dotp);
-        }
-
-        return normalizePoint(sumPoints(p, q), 0.1 * dotp * scale);
     }
 
     function squareness(points) {
@@ -122,26 +97,46 @@
         return 0;
     }
 
+
+    function calcMotion(b, i, array) {
+
+        var a = array[(i - 1 + array.length) % array.length],
+            c = array[(i + 1) % array.length],
+            p = subtractPoints(a, b),
+            q = subtractPoints(c, b),
+            scale, dotp;
+
+        scale = 2 * Math.min(geoEuclideanDistance(p, [0, 0]), geoEuclideanDistance(q, [0, 0]));
+        p = normalizePoint(p, 1.0);
+        q = normalizePoint(q, 1.0);
+
+        dotp = filterDotProduct(p[0] * q[0] + p[1] * q[1]);
+
+        // nasty hack to deal with almost-straight segments (angle is closer to 180 than to 90/270).
+        if (array.length > 3) {
+            if (dotp < -0.707106781186547) {
+                dotp += 1.0;
+            }
+        } else if (dotp && Math.abs(dotp) < corner.dotp) {
+            corner.i = i;
+            corner.dotp = Math.abs(dotp);
+        }
+
+        return normalizePoint(sumPoints(p, q), 0.1 * dotp * scale);
+    }
+    
     return function(geojson, t) {
 
         if (t === null || !isFinite(t)) t = 1;
         t = Math.min(Math.max(+t, 0), 1);
 
-        //var way = graph.entity(wayId),
-        //    nodes = graph.childNodes(way),
-        var coords = geojson.features[0].geometry.coordinates;
-        var nodes = _.map(coords, function(v, k) {
-            return {
-                id: k,
-                loc: [ v[1], v[0] ]
-            };
-        });
 
-        var points = _.chain(nodes).uniq().pluck('loc').value(),
-            corner = {i: 0, dotp: 1},
-            iterations = 1000,
-            epsilon = 1/iterations,
-            node, loc, score, motions, i, j;
+        var motions, i, j,
+
+            coords = geojson.features[0].geometry.coordinates,
+            points = _.map(coords, function(v, k) {
+                return [ v[1], v[0] ];
+            });
 
 
         var oriPoints = _.clone(points),

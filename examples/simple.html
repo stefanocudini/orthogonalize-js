@@ -63,8 +63,8 @@ $.getJSON('polyline_ortho.json', function(geojson) {
 		}).addTo(map);
 
 		_.each(geojson.features[0].geometry.coordinates[0], function(l) {
-			console.log('each',l)
-			L.circleMarker(l.reverse(), {color: '#ff0', radius:6}).addTo(map);
+			
+			L.circleMarker(l.reverse(), {color: '#f0f', radius:5, opacity:1}).addTo(map);
 		});
 });
 
