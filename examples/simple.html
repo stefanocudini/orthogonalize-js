@@ -89,18 +89,25 @@ new L.Control.Draw({
                 color: '#bada55'
             }
         },
-        circle: false, // Turns off this drawing tool
-        rectangle: {
-            shapeOptions: {
-                clickable: false
-            }
-        }
+        marker: false,
+        circle: false,
+        rectangle: false
     },
     edit: {
         featureGroup: geoLayer, //REQUIRED!!
         remove: true
     }
 }).addTo(map);
+
+map.on('draw:created', function (e) {
+
+	console.log(e.layer)
+
+	geoLayer.clearLayers();
+	geoOrto.clearLayers();
+	geoLayer.addData(e.layer.toGeoJSON())
+ 
+});
 
 _.extend(L.control({position:'topleft'}), {
 	onAdd: function(map) {
@@ -116,6 +123,7 @@ _.extend(L.control({position:'topleft'}), {
 				geoOrto.clearLayers();
 
 				var geo = geoLayer.getLayers()[0].toGeoJSON();
+				
 				console.log(geo);
 
 				var geojsonOrto = Orthogonalize(geo);
