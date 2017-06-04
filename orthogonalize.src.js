@@ -5,6 +5,9 @@
 
  based on: Openstreetmap iD editor:
  https://github.com/openstreetmap/iD/blob/master/modules/actions/orthogonalize.js
+
+ https://github.com/openstreetmap/josm/blob/fadeda909a3333e18809bfab1ca3156b4d56d334/src/org/openstreetmap/josm/actions/OrthogonalizeAction.java
+ https://github.com/don-vip
 */
 (function (factory) {
     if(typeof define === 'function' && define.amd) {
@@ -31,6 +34,19 @@
         corner = {i: 0, dotp: 1},
         iterations = 1000,
         epsilon = 1/iterations;
+
+    function projection(point) {
+        var k = 512 / Math.PI, // scale
+            x = 0, y = 0;
+        point = d3.geoMercatorRaw(point[0] * Math.PI / 180, point[1] * Math.PI / 180);
+        return [point[0] * k + x, y - point[1] * k];
+    }
+    projection.invert = function(point) {
+        var k = 512 / Math.PI, // scale
+            x = 0, y = 0;        
+        point = d3.geoMercatorRaw.invert((point[0] - x) / k, (y - point[1]) / k);
+        return point && [point[0] * 180 / Math.PI, point[1] * 180 / Math.PI];
+    };
 
     function geoEuclideanDistance(a, b) {
         var x = a[0] - b[0], y = a[1] - b[1];
@@ -133,9 +149,10 @@
 
         var motions, i, j,
 
-            coords = geojson.features[0].geometry.coordinates,
+            coords = geojson.features ? geojson.features[0].geometry.coordinates : geojson.geometry.coordinates,
             points = _.map(coords, function(v, k) {
-                return [ v[1], v[0] ];
+                var loc = [ v[1], v[0] ];
+                return loc;
             });
 
 
@@ -160,15 +177,14 @@
                 break;
             }
             
-            if((i%100)==0)   //each 10 cycles
-                L.polyline(newPoints, {color: '#0e0',weight:3, opacity:i/1000}).addTo(map);
         }
 
         points = newPoints;
 
         for (i = 0; i < points.length; i++) {
             // only move the points that actually moved
-            if (oriPoints[i][0] !== points[i][0] || oriPoints[i][1] !== points[i][1]) {
+            if (oriPoints[i][0] !== points[i][0] || 
+                oriPoints[i][1] !== points[i][1] ) {
                 
                 //loc = projection.invert(points[i]);
                 //node = graph.entity(nodes[i].id);
@@ -176,9 +192,7 @@
 
                 points[i] = geoInterp(oriPoints[i], points[i], t);
                 //console.log('geoInterp', oriPoints[i], points[i]);
-                
-                L.circleMarker(oriPoints[i], {color: '#00f'}).addTo(map);
-                L.circleMarker(points[i], {color: '#f00', radius:5}).addTo(map);
+
             }
         }
 

@@ -3,7 +3,8 @@
 <head> 
 <title></title> 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-	<link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
+	<link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css" />
+	<link rel="stylesheet" href="../node_modules/leaflet-draw/dist/leaflet.draw.css" />
 	<link rel="stylesheet" href="../style.css" />
 </head>
 
@@ -16,45 +17,20 @@
 
 <script src="../node_modules/jquery/dist/jquery.min.js"></script>
 <script src="../node_modules/leaflet/dist/leaflet-src.js"></script>
-
+<script src="../node_modules/leaflet-draw/dist/leaflet.draw.js"></script>
 <script src="../node_modules/underscore/underscore-min.js"></script>
+<script src="../node_modules/d3/build/d3.js"></script>
 <script src="../orthogonalize.src.js"></script>
 <script>
 
-	var map = L.map('map', {
-		zoom: 17,
-		center: [42.31981, 12.69832]
-		//crs: L.CRS.Simple,
-		//layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
-	});
+var map = L.map('map', {
+	zoom: 17,
+	center: [42.31981, 12.69832]
+	//crs: L.CRS.Simple,
+	//layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+});
 
-	$.getJSON('polyline.json', function(geojson) {
-
-		var geoLayer = L.geoJson(geojson, {
-			style: function() {
-				return {color: '#00f', weight: 5}
-			}
-		});
-
-		map.addLayer(geoLayer);//.fitBounds( geoLayer.getBounds() );
-
-		console.log('original geojson',geojson);
-
-		var geojsonOrto = Orthogonalize(geojson);
-
-		console.log('Orthogonalized',geojsonOrto);
-
-		var geoOrto = L.geoJson( geojsonOrto, {
-			style: function() {
-				return {color: '#f00', weight: 2, opacity: 1}
-			}
-		});
-		
-
-		map.addLayer(geoOrto);
-	});
-
-$.getJSON('polyline_ortho.json', function(geojson) {
+/*$.getJSON('polyline_ortho.json', function(geojson) {
 
 		L.geoJson(geojson, {
 			style: function() {
@@ -66,7 +42,92 @@ $.getJSON('polyline_ortho.json', function(geojson) {
 			
 			L.circleMarker(l.reverse(), {color: '#f0f', radius:5, opacity:1}).addTo(map);
 		});
+});*/
+
+var geoLayer = L.geoJson(null, {
+	style: function() {
+		return {color: '#00f', weight: 5}
+	},
+	//onEachFeature: function(feature) {
+		//for(var i=0; feature.geometry.coordinates)
+        //L.circleMarker(points[i], {color: '#f00', radius:5}).addTo(map);
+	//}
+}).addTo(map);
+
+var geoOrto = L.geoJson(null, {
+	style: function() {
+		return {color: '#f00', weight: 2, opacity: 1}
+	}
+}).addTo(map);
+	
+
+$.getJSON('polyline.json', function(geojson) {
+
+	geoLayer.addData(geojson);
+
+	var geojsonOrto = Orthogonalize(geojson);
+
+	geoOrto.addData(geojsonOrto);
 });
+
+new L.Control.Draw({
+    position: 'topleft',
+    draw: {
+        polyline: {
+            shapeOptions: {
+                color: '#f357a1',
+                weight: 10
+            }
+        },
+        polygon: {
+            allowIntersection: false, // Restricts shapes to simple polygons
+            drawError: {
+                color: '#e1e100', // Color the shape will turn when intersects
+                message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+            },
+            shapeOptions: {
+                color: '#bada55'
+            }
+        },
+        circle: false, // Turns off this drawing tool
+        rectangle: {
+            shapeOptions: {
+                clickable: false
+            }
+        }
+    },
+    edit: {
+        featureGroup: geoLayer, //REQUIRED!!
+        remove: true
+    }
+}).addTo(map);
+
+_.extend(L.control({position:'topleft'}), {
+	onAdd: function(map) {
+		var div = L.DomUtil.create('div', 'leaflet-bar'),
+			a = L.DomUtil.create('a', '', div);
+		a.href = '#';
+		a.title = 'Orthogonalize';
+		a.innerHTML = '[ &nbsp; ]';
+		L.DomEvent
+			.on(a, 'click', L.DomEvent.stop, this)
+			.on(a, 'click', function(e) {
+				
+				geoOrto.clearLayers();
+
+				var geo = geoLayer.getLayers()[0].toGeoJSON();
+				console.log(geo);
+
+				var geojsonOrto = Orthogonalize(geo);
+				
+				geoOrto.addData(geojsonOrto);
+
+				
+
+			}, this);
+		return div;
+	}
+}).addTo(map);
 
 </script>
 
