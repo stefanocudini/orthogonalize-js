@@ -1,7 +1,12 @@
-//https://github.com/openstreetmap/iD/blob/master/js/id/actions/orthogonalize.js
+/*originale file
 
-/*
- * Based on https://github.com/openstreetmap/potlatch2/blob/master/net/systemeD/potlatch2/tools/Quadrilateralise.as
+    2015
+    https://github.com/openstreetmap/iD/blob/master/js/id/actions/orthogonalize.js
+
+    2022
+    https://github.com/openstreetmap/iD/blob/develop/modules/actions/orthogonalize.js
+
+    Based on https://github.com/openstreetmap/potlatch2/blob/master/net/systemeD/potlatch2/tools/Quadrilateralise.as
  */
 var iD = {};
 
