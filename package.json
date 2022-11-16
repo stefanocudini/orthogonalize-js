@@ -24,6 +24,9 @@
     "url": "https://github.com/stefanocudini/orthogonalize-js/issues"
   },
   "homepage": "https://opengeo.tech/maps/orthogonalize-js",
+  "dependencies": {
+    "underscore": "^1.8.2"
+  },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
