@@ -6,14 +6,25 @@
 	<link rel="stylesheet" href="//unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
 	<link rel="stylesheet" href="//unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
 	<link rel="stylesheet" href="style.css" />
+	<style type="text/css">
+		#map {
+			position: absolute;
+			top: 60px;
+			left: 0;
+			right: 0;
+			bottom: 0
+		}
+	</style>
 </head>
 
 <body>
 <h3><a href="../"><big>◄</big> Orthogonalize JS</a></h3>
 
-<h4>Simple Example: <em>Orthogonalize Leaflet Polyline</em></h4>
+<div>
+	Editing blue line to produce a orthogonalized red line
+</div>
 
-<div id="map" style="position: absolute;top: 0;left: 0;right: 0;bottom: 0"></div>
+<div id="map"></div>
 
 <script src="//unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
 <script src="//unpkg.com/leaflet@1.4.0/dist/leaflet-src.js"></script>
@@ -46,13 +57,17 @@ var map = L.map('map', {
 
 var geoLayer = L.geoJson(null, {
 	style: function() {
-		return {color: '#00f', weight: 5}
+		return {color: '#00f', weight: 8}
 	},
 	//onEachFeature: function(feature) {
 		//for(var i=0; feature.geometry.coordinates)
         //L.circleMarker(points[i], {color: '#f00', radius:5}).addTo(map);
 	//}
-}).addTo(map);
+})
+.on('click', e=> {
+	document.querySelector(".leaflet-draw-edit-edit").click()
+})
+.addTo(map);
 
 var geoOrto = L.geoJson(null, {
 	style: function() {
@@ -70,12 +85,12 @@ $.getJSON('polyline.json', function(geojson) {
 	geoOrto.addData(geojsonOrto);
 });
 
-new L.Control.Draw({
+var controlDraw = new L.Control.Draw({
     position: 'topleft',
     draw: {
         polyline: {
             shapeOptions: {
-                color: '#f357a1',
+                color: '#f00',
                 weight: 10
             }
         },
@@ -91,15 +106,12 @@ new L.Control.Draw({
     }
 }).addTo(map);
 
-map.on('draw:created', function (e) {
-
-	console.log(e.layer)
-
+map.on('draw:created', e => {
 	geoLayer.clearLayers();
 	geoOrto.clearLayers();
 	geoLayer.addData(e.layer.toGeoJSON())
- 
-});
+})
+.on('draw:edited draw:editvertex draw:editstop', _.debounce(updateOrto, 400));
 
 _.extend(L.control({position:'topleft'}), {
 	onAdd: function(map) {
@@ -107,27 +119,26 @@ _.extend(L.control({position:'topleft'}), {
 			a = L.DomUtil.create('a', '', div);
 		a.href = '#';
 		a.title = 'Orthogonalize';
-		a.innerHTML = '[ &nbsp; ]';
+		a.innerHTML = '[►]';
 		L.DomEvent
 			.on(a, 'click', L.DomEvent.stop, this)
-			.on(a, 'click', function(e) {
-				
-				geoOrto.clearLayers();
-
-				var geo = geoLayer.getLayers()[0].toGeoJSON();
-				
-				console.log(geo);
-
-				var geojsonOrto = Orthogonalize(geo);
-				
-				geoOrto.addData(geojsonOrto);
-
-				
-
-			}, this);
+			.on(a, 'click', updateOrto, this);
 		return div;
 	}
 }).addTo(map);
+
+function updateOrto() {
+
+	geoOrto.clearLayers();
+
+	var geo = geoLayer.getLayers()[0].toGeoJSON();
+
+	console.log(geo);
+
+	var geojsonOrto = Orthogonalize(geo);
+
+	geoOrto.addData(geojsonOrto);
+}
 
 </script>
 
