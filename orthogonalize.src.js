@@ -1,7 +1,7 @@
 /*
  2015 © Stefano Cudini
  Orthogonalize.js, a Javascript polyline orthogonalizer library
- http://labs.easyblog.it/maps/orthogonalize-js
+ https://opengeo.tech/maps/orthogonalize-js
 
  based on: Openstreetmap iD editor:
  https://github.com/openstreetmap/iD/blob/master/modules/actions/orthogonalize.js
