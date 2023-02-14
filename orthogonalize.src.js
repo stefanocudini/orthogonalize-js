@@ -204,9 +204,7 @@
                     "properties": {},
                     "geometry": {
                         "type": "LineString",
-                        "coordinates": _.map(points, function(p) {
-                            return [ p[1], p[0] ]
-                        })
+                        "coordinates": points.map(p => [p[1], p[0]])
                     }
                 }
             ]
