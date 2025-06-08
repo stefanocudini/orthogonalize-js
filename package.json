@@ -1,7 +1,7 @@
 {
   "name": "orthogonalize-js",
-  "version": "0.0.1",
-  "description": "a Javascript polyline orthogonalizer library",
+  "version": "0.0.2",
+  "description": "a Javascript geometry orthogonalizer library",
   "main": "orthogonalize.src.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,13 +17,13 @@
   "author": {
     "name": "Stefano Cudini",
     "email": "stefano.cudini@gmail.com",
-    "url": "http://labs.easyblog.it/"
+    "url": "https://opengeo.tech"
   },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/stefanocudini/orthogonalize-js/issues"
   },
-  "homepage": "http://labs.easyblog.it/maps/orthogonalize-js",
+  "homepage": "https://opengeo.tech/orthogonalize-js",
   "dependencies": {
     "d3": "^4.9.1",
     "gramschmidt": "^1.0.0",
@@ -32,15 +32,8 @@
   },
   "devDependencies": {
     "geojson-project": "^1.0.1",
-    "grunt": "^0.4.5",
-    "grunt-cli": "^0.1.13",
-    "grunt-contrib-clean": "^0.5.0",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "^0.5.0",
-    "grunt-markdown": "^0.6.1",
     "jquery": "^2.1.3",
     "leaflet": "^0.7.3",
-    "leaflet-draw": "^0.4.9",
-    "proj4": "^2.4.3"
+    "leaflet-draw": "^0.4.9"
   }
 }

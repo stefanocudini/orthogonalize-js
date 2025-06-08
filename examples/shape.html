@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<title></title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+	<link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+<h3><a href="../"><big>◄</big> Orthogonalize JS</a></h3>
+
+<h4>Simple Example: <em>Orthogonalize Leaflet Polyline</em></h4>
+
+<div id="map" style="position: absolute;top: 0;left: 0;right: 0;bottom: 0"></div>
+
+<script src="https://unpkg.com/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script src="../orthogonalize.src.js"></script>
+<script>
+
+const OrthoOpts = {
+    orientationMode: "cardinal"
+    //orientationMode: "preserve"
+}
+
+var map = L.map('map', {
+	zoom: 17,
+	center: [42.31981, 12.69832],
+	//crs: L.CRS.Simple,
+	layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+});
+
+var geoLayer = L.geoJson(null, {
+	style: function() {
+		return {color: '#0000ff', weight: 5}
+	}
+}).addTo(map);
+
+var geoOrto = L.geoJson(null, {
+	style: function() {
+		return {color: '#ff0000', weight: 2, opacity: 1}
+	}
+}).addTo(map);
+
+$.getJSON('shape.json', function(geojson) {
+
+	geoLayer.addData(geojson);
+
+	var geojsonOrto = Orthogonalize(OrthoOpts, geojson);
+
+	geoOrto.addData(geojsonOrto);
+    map.setView(geoLayer.getBounds().getCenter(), 15);
+});
+
+new L.Control.Draw({
+    position: 'topleft',
+    draw: {
+        polyline: {
+            shapeOptions: {
+                color: '#f357a1',
+                weight: 10
+            }
+        },
+        polygon: {
+            allowIntersection: false, // Restricts shapes to simple polygons
+            drawError: {
+                color: '#e1e100', // Color the shape will turn when intersects
+                message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+            },
+            shapeOptions: {
+                color: '#bada55'
+            }
+        },
+        marker: false,
+        circle: false,
+        rectangle: false
+    },
+    edit: {
+        featureGroup: geoLayer, //REQUIRED!!
+        remove: true
+    }
+}).addTo(map);
+
+map.on('draw:created', function (e) {
+
+	console.log(e.layer)
+
+	geoLayer.clearLayers();
+	geoOrto.clearLayers();
+	geoLayer.addData(e.layer.toGeoJSON())
+ 	var geojsonOrto = Orthogonalize(OrthoOpts, e.layer.toGeoJSON());
+	geoOrto.addData(geojsonOrto);
+});
+
+</script>
+
+<div id="copy"><a href="https://opengeo.tech/">Labs</a> &bull; <a rel="author" href="https://opengeo.tech/stefano-cudini/">Stefano Cudini</a></div>
+	
+</body>
+</html>
