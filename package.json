@@ -26,9 +26,12 @@
   "homepage": "http://labs.easyblog.it/maps/orthogonalize-js",
   "dependencies": {
     "d3": "^4.9.1",
+    "gramschmidt": "^1.0.0",
+    "mathjs": "^3.13.3",
     "underscore": "^1.8.2"
   },
   "devDependencies": {
+    "geojson-project": "^1.0.1",
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
     "grunt-contrib-clean": "^0.5.0",
@@ -37,6 +40,7 @@
     "grunt-markdown": "^0.6.1",
     "jquery": "^2.1.3",
     "leaflet": "^0.7.3",
-    "leaflet-draw": "^0.4.9"
+    "leaflet-draw": "^0.4.9",
+    "proj4": "^2.4.3"
   }
 }

@@ -8,6 +8,9 @@
 
  https://github.com/openstreetmap/josm/blob/fadeda909a3333e18809bfab1ca3156b4d56d334/src/org/openstreetmap/josm/actions/OrthogonalizeAction.java
  https://github.com/don-vip
+
+ https://github.com/jdiffen1/gram-schmidt
+ 
 */
 (function (factory) {
     if(typeof define === 'function' && define.amd) {

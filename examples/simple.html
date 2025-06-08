@@ -15,11 +15,11 @@
 
 <div id="map" style="position: absolute;top: 0;left: 0;right: 0;bottom: 0"></div>
 
-<script src="../node_modules/jquery/dist/jquery.min.js"></script>
-<script src="../node_modules/leaflet/dist/leaflet-src.js"></script>
-<script src="../node_modules/leaflet-draw/dist/leaflet.draw.js"></script>
-<script src="../node_modules/underscore/underscore-min.js"></script>
-<script src="../node_modules/d3/build/d3.js"></script>
+<script src="https://unpkg.com/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script src="https://unpkg.com/underscore@1.13.6/underscore-min.js"></script>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js"></script>
 <script src="../orthogonalize.src.js"></script>
 <script>
 
@@ -30,23 +30,28 @@ var map = L.map('map', {
 	//layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
 });
 
-/*$.getJSON('polyline_ortho.json', function(geojson) {
+$.getJSON('polyline_ortho.json', function(geojson) {
 
 		L.geoJson(geojson, {
 			style: function() {
-				return {color: '#f0f', weight: 5}
+				return {color: '#ff00ff', weight: 5, opacity:1}
+			}
+		}).addTo(map);
+});//*/
+$.getJSON('polyline2.json', function(geojson) {
+
+		var g = L.geoJson(geojson, {
+			style: function() {
+				return {color: '#ff0000', weight: 5, opacity:1}
 			}
 		}).addTo(map);
 
-		_.each(geojson.features[0].geometry.coordinates[0], function(l) {
-			
-			L.circleMarker(l.reverse(), {color: '#f0f', radius:5, opacity:1}).addTo(map);
-		});
-});*/
+		map.fitBounds(g.getBounds());
+});//*/
 
 var geoLayer = L.geoJson(null, {
 	style: function() {
-		return {color: '#00f', weight: 5}
+		return {color: '#0000ff', weight: 5}
 	},
 	//onEachFeature: function(feature) {
 		//for(var i=0; feature.geometry.coordinates)
@@ -56,7 +61,7 @@ var geoLayer = L.geoJson(null, {
 
 var geoOrto = L.geoJson(null, {
 	style: function() {
-		return {color: '#f00', weight: 2, opacity: 1}
+		return {color: '#ff0000', weight: 2, opacity: 1}
 	}
 }).addTo(map);
 	
