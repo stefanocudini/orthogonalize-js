@@ -1,6 +1,6 @@
 {
   "name": "orthogonalize-js",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "a Javascript geometry orthogonalizer library",
   "main": "orthogonalize.src.js",
   "scripts": {
@@ -24,12 +24,6 @@
     "url": "https://github.com/stefanocudini/orthogonalize-js/issues"
   },
   "homepage": "https://opengeo.tech/maps/orthogonalize-js",
-  "dependencies": {
-    "d3": "^4.9.1",
-    "gramschmidt": "^1.0.0",
-    "mathjs": "^3.13.3",
-    "underscore": "^1.8.2"
-  },
   "devDependencies": {
     "geojson-project": "^1.0.1",
     "jquery": "^2.1.3",
