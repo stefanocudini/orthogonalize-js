@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/stefanocudini/orthogonalize-js/issues"
   },
-  "homepage": "https://opengeo.tech/orthogonalize-js",
+  "homepage": "https://opengeo.tech/maps/orthogonalize-js",
   "dependencies": {
     "d3": "^4.9.1",
     "gramschmidt": "^1.0.0",
