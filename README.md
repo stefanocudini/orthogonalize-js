@@ -2,6 +2,9 @@
 
 JavaScript Geometry Orthogonalize library
 
+[![npm version](https://badge.fury.io/js/orthogonalize-js.svg)](http://badge.fury.io/js/orthogonalize-js)
+
+
 Squares the corners of GeoJSON lines and polygons (e.g. building footprints), so that every segment becomes horizontal or vertical on an orthogonal grid, aligned either to the cardinal directions or to the dominant orientation of the shape.
 
 ![Image](https://raw.githubusercontent.com/stefanocudini/orthogonalize-js/master/examples/orthogonalize.png)
